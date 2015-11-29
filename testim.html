@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+</head>
+<style>
+    *{margin: 0;padding: 0;border: none}
+    .log{
+        height: 200px;
+        display: block;
+        overflow-y: auto;
+        padding: 50px;
+        border: solid 3px #666666;
+    }
+    .container{
+        height: 300px;
+        display: block;
+    }
+    .user-list{
+        height: 100%;
+        overflow: auto;
+        width: 20%;
+        float:left;
+        border-right: solid 1px red;
+        box-sizing: border-box;
+    }
+    .content{float:right;height: 100%;width: 80%;position:relative;}
+    .buttons{height: 100px;position: absolute  ;bottom: 0;width: 100%;background: #eeeeee}
+    .send{color:red;font-size: 25px;float: right;margin:40px;background: #ffffff}
+    .text{width: 80%;height: 100%;box-sizing: border-box;border:solid 5px #eeeeee;font-size: 20px;}
+</style>
+<body>
+
+<div class="container">
+    <ul class="user-list">
+
+    </ul>
+    <div class="content">
+        <div class="comment">
+
+        </div>
+        <div class="buttons">
+            <textarea class="text" type="text" value="" name="text"></textarea>
+            <input class="send" type="button" value="发送">
+        </div>
+    </div>
+</div>
+
+<div id="log" class="log"></div>
+</body>
+
+<script>
+    var ws = new WebSocket("ws://192.168.1.102:1234/");
+
+    var log=document.getElementById("log");
+    ws.onopen=function(event){
+        var message={
+            u_id:null,
+            event:"in",
+            msg:"hello"
+        };
+        //console.log(JSON.stringify(message))
+        ws.send(JSON.stringify(message));
+    };
+    ws.onmessage = function (event) {
+        log.innerHTML+=event.data;
+        var data=JSON.parse(event.data);
+
+        if(data.users!=''){
+            var html='';
+            var u=data.users;
+            for(var i in u){
+
+                html+='<li uid="'+u[i].u_id+'">'+u[i].u_name+'</li>';
+            }
+            document.getElementsByClassName("user-list")[0].innerHTML=html;
+        }console.log(data);
+        if(data.room_id!==''){
+            var html='';
+            if(data.room_id==0){
+
+                html+='<p uid="'+data.u_id+'">'+data.u_name+':'+data.msg+'</p>'
+
+            }
+
+            document.getElementsByClassName("comment")[0].innerHTML+=html;
+
+        }
+        //console.log(event.data);
+    };
+
+    document.getElementsByClassName("send")[0].onclick=function(){
+        var message={
+            u_id:null,
+            event:"room_msg",
+            room_id:0,
+            msg:document.getElementsByClassName("text")[0].value
+        };
+        ws.send(JSON.stringify(message));
+    }
+</script>
+</html>
