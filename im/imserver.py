@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 import asyncio
-import websockets
 import json
 import time
-
+import os,sys
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0,parentdir)
+import websockets
 
 
 class room:
@@ -60,6 +62,7 @@ class IMserver:
     def __init__(self, host=None, port=None):
         self.host = host
         self.port = port
+        print(u"im started...")
         self.run()
 
     def run(self):
@@ -68,6 +71,7 @@ class IMserver:
         start_server = websockets.serve(self.handler, self.host, self.port)
         asyncio.get_event_loop().run_until_complete(start_server)
         asyncio.get_event_loop().run_forever()
+
 
     @asyncio.coroutine
     def handler(self, websocket, path):
@@ -122,4 +126,4 @@ class IMserver:
 
 
 if __name__ == '__main__':
-    im=IMserver('192.168.1.102', 1234)
+    im=IMserver('127.0.0.1', 1234)
