@@ -62,7 +62,7 @@ class IMserver:
     def __init__(self, host=None, port=None):
         self.host = host
         self.port = port
-        print(u"im started...")
+        print(u"im started at {}:{}...".format(host,port))
         self.run()
 
     def run(self):
